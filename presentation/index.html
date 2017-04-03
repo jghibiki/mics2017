@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Applying Convolutional Neural Networks to Per-pixel Orthoimagery Land Use Classification</title>
+
+		<meta name="description" content="Utilizing the Portability of Docker To Design A Portable and Scalable Continuous Integration Stack">
+		<meta name="author" content="Jordan Goetze">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h3>Applying Convolutional Neural Networks to Per-pixel Orthoimagery Land Use Classification</h3>
+					<p>
+                        <br>
+                        By Jordan Goetze <br>
+                        <br>
+						<small>
+                            Computer Science <br>
+                            North Dakota State University <br>
+                            Fargo, North Dakota 58103 <br>
+                            jordan.goetze@ndsu.edu
+                        </small>
+					</p>
+				</section>
+
+                <section >
+                    <h2>Overview</h2>
+                    <ul>
+                        <li class="fragment">
+                            Terminology
+                        </li>
+                        <li class="fragment">
+                            Introduction 
+                        </li>
+                        <li class="fragment">
+                            Previous Work
+                        </li>
+                        <li class="fragment">
+                            Data Set Preprocessing
+                        </li>
+                        <li class="fragment">
+                            Model
+                        </li>
+                        <li class="fragment">
+                            Dataset and Expirimental Setup
+                        </li>
+                        <li class="fragment">
+                            Results and Observations 
+                        </li>
+                        <li class="fragment">
+                            Future Work
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <section>
+                        <h2>Terminology</h2>
+                    </section>
+                    <section>
+                        <h3>Terminology</h3>
+                        <p>
+                            <b>Per-pixel image classifications:</b> Classifying each pixel of an image.
+                        </p>
+                        <p class="fragment">Useful for:</p>
+                        <ul>
+                            <li class="fragment">Scene labeling for autonomous driving</li>
+                            <li class="fragment">Inferring relationships between objects in an image.</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Terminology</h3>
+                        <p>
+                            <b>Land-Use Classification:</b> Classifications of what a given tract of land is used for.
+                        </p>
+                        <p class="fragment">Potential uses:</p>
+                        <ul>
+                            <li class="fragment">
+                                Approximating crop yields by year
+                            </li>
+                            <li class="fragment">
+                                Tracking changes in land use 
+                            </li>
+                            <li class="fragment">
+                                Tracking changes in forestry and vegitation
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Terminology</h3>
+                        <p>
+                            <b>Orthoimagery:</b> An aerial photograph where corrections have been made for various displacements such as building tilt and scale variations caused by terrain relief. 
+                        </p>
+                        <image style="height:50%; width:50%" class="fragment" data-src="images/ortho_imagery_example.png">
+                    </section>
+                    <section>
+                        <h3>Terminology</h3>
+                        <p>
+                            <b>Convolutional Neural Networl (CNN):</b> a type of neural network where the connectivity pattern of it's neurons is inspired by the organization of the visual cortex of an animal.
+                        </p>
+                        <p class="fragment">Useful for:</p>
+                        <ul>
+                            <li class="fragment">Scene labeling for autonomous driving</li>
+                            <li class="fragment">Inferring relationships between objects in an image</li>
+                            <li class="fragment">Whole-image classification</li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>Introduction</h2>
+                    </section>
+                    <section>
+                        <h4>Introduction: Technology, Imagery and Data</h4>
+                        <ul>
+                            <li class="fragment">Cost of satelites and drones is decreasing</li>
+                            <li class="fragment">Cost of orthoimagery decreasing</li>
+                            <li class="fragment">Ammount of availiable orthoimagry increasing</li>
+                            <li class="fragment">Ammount and quality of labeled or annotated orthoimagery has not kept pace</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Introduction: Availiable Data</h4>
+                        <b>National Agricultural Imagery Program (NAIP):</b>
+                        <ul>
+                            <li class="fragment">Provides imagery spanning the majority of the continental United States</li>
+                            <li class="fragment">Imagery captured at 1 meter Ground Sample Distantce (GSD)</li>
+                            <li class="fragment">Imagery consists of red, green, blue, and near-infrared image layers</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Introduction: Availiable Data</h4>
+                        <b>National Agricultural Statistics Service (NASS) Land-Use Classifications:</b>
+                        <ul>
+                            <li class="fragment">Land-Use classifications for the continental United States</li>
+                            <li class="fragment">Low resolution accuracy compared to NAIP imagery. 
+                                <ul>
+                                    <li class="fragment">1 NASS pixel represents a 50 square meter area in the NAIP Imagery</li>
+                                </ul>
+                            </li>
+                            <li class="fragment">Poor quality classifications</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Introduction: NASS - Mislabeled Pixels</h4>
+                        <img style="height:75%; width:50%" data-src="images/poor_labels_1.png" />
+                    </section>
+                    <section>
+                        <h4>Introduction: NASS - Clipped Organic Features</h4>
+                        <img style="height:75%; width:50%" data-src="images/poor_labels_2.png" />
+                    </section>
+                    <section>
+                        <h4>Introduction: NASS - Poor Representation of Fine Features</h4>
+                        <img style="height:50%; width:50%" data-src="images/poor_labels_3.png" />
+                    </section>
+                    <section>
+                        <h4>Introduction: Goal</h4>
+                        <p><em>Create a model which can efficiently produce higher resolution labeled orthoimagery .</em></p>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>Previous Work</h2>
+                    </section>
+                    <section>
+                        <h4>Previous Work</h2>
+                        <ul>
+                            <li class="fragment">Focused on identifiying roads or buildings.</li>
+                            <li class="fragment">Apparently little research into identifying crops or other agricultural features</li>
+                            <li class="fragment">Per-pixel classifications of orthoimagery fall under the realm of scene recoagnition.</li>
+                            <li class="fragment">The SegNet model provides a reletively new approach to scene recoagnition.</li>
+                        <ul>
+                    </section>
+                    <section>
+                        <h4>Previous Work: SegNet</h4>
+                        <ul>
+                            <li class="fragment">Deep Convolutional Encoder-Decoder Network</li>
+                            <li class="fragment">Produces good results when applied to CamVid dataset.</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Previous Work: SegNet Demo</h4>
+                            <iframe width="1200" height="600" data-src="https://www.youtube.com/embed/CxanE_W46ts" frameborder="0" allowfullscreen></iframe>
+                    </section>
+                    <section>
+                        <h4>Previous Work: SegNet</h4>
+                        <ul>
+                            <li>Deep Convolutional Encoder-Decoder Network</li>
+                            <li>Produces good results when applied to CamVid dataset.
+                                <ul>
+                                    <li class="fragment"><mark>Produces high accuracy labels</mark></li>
+                                    <li class="fragment"><mark>Generates classifications in real-time</mark></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>Data Set Preprocessing</h2>
+                    </section>
+                    <section>
+                        <h4>Data Set Preprocessing: Data Sets</h4>
+                        <ul>
+                            <li class="fragment">National Agricultural Imagery Program (NAIP) Imagery</li>
+                            <li class="fragment">National Agricultural Statistics Service (NASS) Land-use classifications</li>
+                    </section>
+                    <section>
+                        <h4>Data Set Preprocessing: Acquisition</h4>
+                        <ul>
+                            <li class="fragment">
+                                NAIP Imagery Downloaded via the EarthExplorer tool hosted by The United States Geographical Services
+                            </li>
+                            <li class="fragment">
+                                The Geospacial Data Abstraction Library (GDAL) tool set is used to generate a set of shapefiles using the NAIP Imagery
+                            </li>
+                            <li class="fragment">
+                                These shapefiles are uploaded to the NASS tool CropScape and are used to select regions for which to download land-use classification data.
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Data Set Preprocessing: Resizing</h4>
+                        <ul>
+                            <li class="fragment">NASS images are warped with gdalwarp to match the resolution of the corresponding NAIP image.
+                                <ul>
+                                    <li class="fragment">The NASS images are georectified</li>
+                                    <li class="fragment">When resized with gdalwarp, pixels are not shifted or offset</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Data Set Preprocessing: Slicing</h4>
+                        <ul>
+                            <li class="fragment">NAIP and NASS images are sliced into 256x256 pixel swatches</li>
+                            <li class="fragment">Each NAIP image layer is stored as a separate greyscale PNG image</li>
+                            <li class="fragment">The NAIP red and near infrared layers are used to compute a Normalized Difference Vegetation Index (NDVI) layer scaled from 0 to 255</li>
+                            <li class="fragment">This NDVI layer is stored in place of the near infrared layer.</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Data Set Preprocessing: Recategorization</h4>
+                        <ul>
+                            <li class="fragment">NASS Land Use Classifications contain 255 possible labels. These are simplfied down into 5 groups:
+                                <ul>
+                                    <li>Forestry</li>
+                                    <li>Developed</li>
+                                    <li>Field</li>
+                                    <li>Background</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Data Set Preprocessing: Recategorization</h4>
+                        <table>
+                            <tr>
+                                <th>Forestry</th>
+                                <th>Developed</th>
+                                <th>Field</th>
+                                <th>Water</th>
+                                <th>Background</th>
+                            </tr>
+                            <tr>
+                                <td>0.063%</td>
+                                <td>4.84%</td>
+                                <td>76.26%</td>
+                                <td>16.05%</td>
+                                <td>2.22%</td>
+                            </tr>
+                        </table>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>Model</h2>
+                    </section>
+                    <section>
+                        <h4>Model: SegNet</h4>
+                        <img data-src="images/network.png"/>
+                        <p>Kernel Size 7x7</p>
+                    </section>
+                    <section>
+                        <h4>Model: Convolutions and Kernel Size</h4>
+                        <img data-src="images/convolution_schematic.gif"/>
+                        <p>Example with 3x3 kernel size</p>
+                        <p class="fragment">Kernel size impacts how fine of features will be recoagnized.</p>
+                        <p class="fragment">Resulting image is called a feature map or feature window.</p>
+                        <!-- Smaller kernel size = finer features and more noise image noise -->
+                        <!-- Larger kernel size = less fine features and less noise -->
+                    </section>
+                    <section>
+                        <h4>Model: SegNet</h4>
+                        <img data-src="images/network.png"/>
+                        <p>Kernel Size 7x7</p>
+                    </section>
+                    <section>
+                        <h4>Model: Convolutions and Kernel Size</h4>
+                        <img data-src="images/maxpool.jpeg"/>
+                        <p>Down samples the feature window</p>
+                    </section>
+                    <section>
+                        <h4>Model: SegNet Variants</h4>
+                        <img data-src="images/network.png"/>
+                        <p>Kernel Size 3x3 and 5x5</p>
+                    </section>
+                </section>
+                <section>
+                    <h4>References</h4>
+                    <ul>
+                        <li>https://en.wikipedia.org/wiki/File:OrthoPerspective.svg</li>
+                        <li>https://en.wikipedia.org/wiki/Convolutional_neural_network</li>
+                        <li>https://ujjwalkarn.me/2016/08/11/intuitive-explanation-convnets/</li>
+                    </ul>
+                </section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+                slideNumber: true,
+                showNotes: true,
+
+				transition: 'concave', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
