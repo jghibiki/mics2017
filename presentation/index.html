@@ -74,7 +74,7 @@
                             Model
                         </li>
                         <li class="fragment">
-                            Dataset and Expirimental Setup
+                            Training &amp; Evaluation
                         </li>
                         <li class="fragment">
                             Results and Observations 
@@ -309,7 +309,7 @@
                     </section>
                     <section>
                         <h4>Model: SegNet</h4>
-                        <img data-src="images/network.png"/>
+                        <img style="width: 200%" data-src="images/network.png"/>
                         <p>Kernel Size 7x7</p>
                     </section>
                     <section>
@@ -323,19 +323,116 @@
                     </section>
                     <section>
                         <h4>Model: SegNet</h4>
-                        <img data-src="images/network.png"/>
-                        <p>Kernel Size 7x7</p>
+                        <img style="width: 200%" data-src="images/network.png"/>
                     </section>
                     <section>
-                        <h4>Model: Convolutions and Kernel Size</h4>
+                        <h4>Model: Max Pooling Operation</h4>
                         <img data-src="images/maxpool.jpeg"/>
                         <p>Down samples the feature window</p>
+                        <p class="fragment">SegNet stores the indices of the maximum values for later</p>
+                    </section>
+                    <section>
+                        <h4>Model: SegNet</h4>
+                        <img style="width: 200%" data-src="images/feature_window_layers.png"/>
+                        <p>Max pool + Indice Unraveling</p>    
                     </section>
                     <section>
                         <h4>Model: SegNet Variants</h4>
                         <img data-src="images/network.png"/>
                         <p>Kernel Size 3x3 and 5x5</p>
                     </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>Training &amp; Evaluation</h2>
+                    </section>
+                    <section>
+                        <h4>Training</h4>
+                        <ul>
+                            <li class="fragment">Trained on 90% of availiable image swatches
+                                <ul>
+                                    <li class="fragment">approx. 72,000 image swatches</li>
+                                </ul>
+                            </li>
+                            <li class="fragment">Batches of 15</li>
+                            <li class="fragment">25 Epochs</li>
+                            <li class="fragment">Checkpoints are saved every 100 steps</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Evaluation</h4>
+                        <ul>
+                            <li class="fragment">Evaluation is done on the remaining 10% of availiable image swatches
+                                <ul>
+                                    <li class="fragment">approx. 8,000 image swatches</li>
+                                </ul>
+                            </li>
+                            <li class="fragment">The checkpoint with the highest evaluation accuracy is selected</li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>Analysis</h2>
+                    </section>
+                    <section>
+                        <h4>Analysis: Evaluation Accuracy</h4>
+                        <p><b>Results:</b> <span class="fragment">Not good<mark class="fragment">?</mark></span>
+                        <table class="fragment">
+                            <tr>
+                                <td>3x3 Convolutional Kernel</td>
+                                <td>71.61%</td>
+                            </tr>
+                            <tr>
+                                <td>5x5 Convolutional Kernel</td>
+                                <td>73.33%</td>
+                            </tr>
+                        </table>
+                    </section>
+                    <section>
+                        <h4>Analysis: Accuracy of training labels</h4>
+                        <p>Observed that the model often produces better representations of features than the NASS classifications</p>
+                    </section>
+                    <section>
+                        <img data-src="images/classification_better_than_labels_1.png">
+                        <img data-src="images/classification_better_than_labels_2.png">
+                    </section>
+                    <section>
+                        <img data-src="images/bad_image_labels.png">
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>Future Work</h2>
+                    </section>
+                    <section>
+                        <h4>Future Work</h4>
+                        <ul>
+                            <li class="fragment">K-Fold Cross Validation</li>
+                            <li class="fragment">Find a way to manage the discrepancy between the label dataset and classification
+                                <ul>
+                                    <li class="fragment">Find which fields in the NASS classifications were ground truthed
+                                        <ul>
+                                            <li class="fragment">Ground truthing is based on the June Agricultural Survey</li>
+                                            <li class="fragment">Unfortunately this information is classified.</li>
+                                        </ul>
+                                    </li>
+                                    <li class="fragment">Find a new classification data set?
+                                        <ul>
+                                            <li class="fragment">National Land Cover Database (NLCD)
+                                                <ul>
+                                                    <li class="fragment">Less focused on agriculture</li>
+                                                </ul>
+                                            </li>
+                                        <ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <h2>Thank You</h2>
                 </section>
                 <section>
                     <h4>References</h4>
